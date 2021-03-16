@@ -70,12 +70,20 @@ class User {
     return $this -> purchasedProducts;
   }
 
-  public function addCard(CreditCard $card) {
-    $this -> cards[] = $card;
+  public function addCard($card) {
+    if ($card instanceof CreditCard) {
+      $this -> cards[] = $card;
+    } else {
+      throw new Exception('<b>La carta inserita dall\'utente non è valida.</b><br>');
+    }
   }
 
-  public function buyProduct(Product $product) {
-    $this -> purchasedProducts[] = $product;
+  public function buyProduct($product) {
+    if ($product instanceof Product) {
+      $this -> purchasedProducts[] = $product;
+    } else {
+      throw new Exception('<b>Il prodotto inserito non è valido.</b><br>');
+    }
   }
 
   public function setMail($mail) {
@@ -236,9 +244,18 @@ echo '<em>numero carta</em> ' . $cartagianni -> getCardNumber() . '<br>';
 echo '<em>proprietario</em> ' . $cartagianni -> getHolder() . '<br>';
 echo '<em>data di scadenza</em> ' . $cartagianni -> getExpirationDate() . '<hr>';
 
-// GIANNI AGGIUNGE UNA CARTA DI CREDITO E COMPRA UN LIBRO*********
-$gianni->addCard($cartagianni);
-$gianni->buyProduct($promessisposi);
+// UTENTE AGGIUNGE UNA CARTA DI CREDITO E COMPRA UN LIBRO*********
+try {
+  $gianni->addCard($cartagianni);
+} catch (Exception $e) {
+  echo $e->getMessage();
+}
+
+try {
+  $gianni->buyProduct($promessisposi);
+} catch (Exception $e) {
+  echo $e->getMessage();
+}
 
 echo "<b>getter per valori di gianni (dopo un acquisto): </b><br><br>";
 echo '<em>nome</em> ' . $gianni -> getName() . '<br>';
@@ -255,7 +272,6 @@ if (count($gianni -> getPurchasedProducts()) > 0) {
 if (count($gianni -> getCards()) > 0) {
   echo '<em>carte collegate</em> ';
   print_r($gianni -> getCards());
-  echo '<hr>';
 } else {
-  echo 'Gianni non ha ancora registrato nessuna carta di credito. <hr>';
+  echo 'Gianni non ha ancora registrato nessuna carta di credito.';
 }
